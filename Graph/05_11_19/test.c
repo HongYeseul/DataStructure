@@ -15,21 +15,25 @@ typedef struct GraphType {
 int distance[MAX_VERTICES];/* 시작정점으로부터의 최단경로 거리 */
 int found[MAX_VERTICES];        /* 방문한 정점 표시 */
 
-void init_setting(GraphType *g){
+void setting(GraphType *g, int v){
     for(int i=0 ; i<g->n ; i++){
-        distance[i] = g->weight[0][i];
+        distance[i] = g->weight[v][i];
         found[i] = FALSE;
     }
-    found[0] = TRUE;
-    distance[0] = 0;
+    found[v] = TRUE;
+}
+
+void print_path(GraphType *g){
+    for(int i=0 ; i < g->n ; i++){
+        printf("%d ", distance[i]);
+    }printf("\n");
 }
 
 int search_min(GraphType *g){
-    int index = -1;
-    int small = INF;
-    for(int i=0 ; i<g->n ; i++)   {
-        if(small > distance[i] && !found[i])
-        {
+    int index = -1, small = INF;
+    
+    for(int i=0; i < g->n ; i ++){
+        if(small > distance[i] && !found[i]){
             index = i;
             small = distance[i];
         }
@@ -37,32 +41,21 @@ int search_min(GraphType *g){
     return index;
 }
 
-void print_path(GraphType *g){
-    printf("\n");
-    for(int i=0 ; i<g->n ; i++){
-        printf("%d ", distance[i]);
-    }printf("\n");
-}
-
 void shortest_path(GraphType *g, int v){
-    int index;
-    //1, 초기화 한다.
-    init_setting(g);
-
-    for(int i=0 ; i<g->n ; i++){
-
-        print_path(g);
-        //2. dist 값 작은 것을 계속 찾아본다.
-        index = search_min(g);
-        printf("\nindex : %d\n", index);
+    //1. 세팅
+    setting(g, v);
+    //2. 작은 값을 계속 찾아 나간다.
+    for(int i=0 ; i<g->n-1 ; i++){
+        int index = search_min(g);
         found[index] = TRUE;
-        //3. dist[w?] 보다 작으면 넣는다.
-        for(int j=0 ; j < g->n ; j++){
+        print_path(g);
+
+        //3. 더 작으면 dist에 넣는다.
+        for(int j=0 ; j<g->n ; j++){
             if(found[j]) continue;
 
-            if(distance[j] > distance[index]+g->weight[index][j]){
+            if(distance[j] > distance[index] + g->weight[index][j])
                 distance[j] = distance[index]+g->weight[index][j];
-            }
         }
     }
 }
@@ -79,11 +72,5 @@ int main(void)
             { INF, INF, INF,   4,   5, INF,   0 } }
         };
     shortest_path(&g, 0);
-    
-    printf("shortest_path : ");
-    for(int i=0 ; i<g.n ; i++){
-        printf("%d ",distance[i]);
-    }printf("\n");
     return 0;
 }
-
