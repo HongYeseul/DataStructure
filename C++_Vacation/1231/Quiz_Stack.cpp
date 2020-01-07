@@ -30,7 +30,6 @@ void MyStack :: print(){
 }
 
 MyStack :: ~MyStack(){
-    cout << "DELETE" << endl;
-    if(top >= 0)
-        delete []arr;
+    cout << "DELETE STACK" << endl;
+    delete []arr;
 }
